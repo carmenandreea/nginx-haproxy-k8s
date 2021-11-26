@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webserver
+  labels:
+    app: webserver
+spec:
+  containers:
+    - name: nginx
+      image: gcr.io/wave44-webhelp-carmenandreea/nginx_image
+      imagePullPolicy: Always
+      ports:
+        - name: nginx-port
+          containerPort: 5000
+          hostPort: 80
+
+    - name: haproxy-lb
+      image: gcr.io/wave44-webhelp-carmenandreea/haproxy_image
+      imagePullPolicy: Always
+      ports:
+        - name: haproxy-port
+          containerPort: 8080 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: port-mapper
+spec:
+  selector:
+    app: webserver
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
